@@ -87,7 +87,7 @@ echo "1" > /var/log/nginx/$1/access.log
 nginx -t
 systemctl restart nginx
 mkdir -p /var/www/$1/public_html/
-echo "<?php printinfo();?>" > /var/www/$1/public_html/index.php
+echo "<?php phpinfo();?>" > /var/www/$1/public_html/index.php
 snap install --classic certbot
 ln -s /snap/bin/certbot /usr/bin/certbot
 certbot --nginx -d $1 -d www.$1
