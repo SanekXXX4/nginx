@@ -92,6 +92,7 @@ chmod 644 /etc/vsftpd.conf
 echo "" >> /etc/vsftpd.conf
 
 service vsftpd start
+systemctl enable vsftpd
 else
 ln -s /usr/share/phpmyadmin /var/www/$1/public_html/phpmyadmin
 PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
