@@ -117,7 +117,23 @@ location ~ \.php$ {
 		fastcgi_send_timeout 600;
 		fastcgi_read_timeout 600;
 	}
+location /phpmyadmin {
+  root /usr/share/;
+  index index.php index.html index.htm;
 
+  location ~ ^/phpmyadmin/(.+\.php)$ {
+    try_files \$uri =404;
+    root /usr/share/;
+    fastcgi_pass unix:/var/run/php/php$PHP_VERSION-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+    include /etc/nginx/fastcgi_params;
+  }
+
+  location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+    root /usr/share/;
+  }
+}
 
 }" > /etc/nginx/conf.d/$1.conf
 mkdir /var/log/nginx/$1
