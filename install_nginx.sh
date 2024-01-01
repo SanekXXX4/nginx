@@ -90,6 +90,8 @@ echo "" >> /etc/vsftpd.conf
 service vsftpd start
 systemctl enable vsftpd
 else
+PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
+echo $PHP_VERSION
 ln -s /usr/share/phpmyadmin /var/www/$1/public_html/phpmyadmin
 echo "server {
 listen 80;
