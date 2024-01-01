@@ -13,11 +13,6 @@ apt-get install ufw -y
 ufw allow 80/tcp
 ufw allow 443/tcp
 ufw allow 22/tcp
-ufw allow 21/tcp
-ufw allow 10090:10100/tcp
-ufw allow 11211/tcp
-ufw allow 6878/tcp
-ufw allow 6878/udp
 ufw allow 'Nginx Full'
 ufw reload
 sed -i 's/ENABLED=no/ENABLED=yes/' /etc/ufw/ufw.conf
@@ -26,7 +21,6 @@ apt install wget curl -y
 wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
 chmod +x mariadb_repo_setup
  ./mariadb_repo_setup \
-
 --mariadb-server-version="mariadb-10.6"
 apt update -y
 apt install mariadb-server mariadb-backup mariadb-client -y
@@ -34,17 +28,19 @@ systemctl start mariadb
 systemctl enable mariadb
 mysql_secure_installation
 apt install php php-fpm php-common php-mysql php-gd php-cli -y
+PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
+echo $PHP_VERSION
 apt purge apache2 -y
 apt-get install software-properties-common -y
 add-apt-repository ppa:ondrej/php
 apt-get update -y
-apt install php8.0-common -y
-apt install php8.0-cli -y
-apt install php8.0-{curl,intl,mysql,readline,xml,mbstring} -y
-apt install php8.0-pcov # PCOV code coverage tool -y
-apt install php8.0-xdebug -y
-apt install php8.0-fpm -y
-apt-get install php8.0-memcache php8.0-memcached -y
+apt install php$PHP_VERSION-common -y
+apt install php$PHP_VERSION-cli -y
+apt install php$PHP_VERSION-{curl,intl,mysql,readline,xml,mbstring} -y
+apt install php$PHP_VERSION-pcov # PCOV code coverage tool -y
+apt install php$PHP_VERSION-xdebug -y
+apt install php$PHP_VERSION-fpm -y
+apt-get install php$PHP_VERSION-memcache php$PHP_VERSION-memcached -y
 apt-get install memcached vsftpd -y
 apt install phpmyadmin -y
 ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
@@ -95,8 +91,6 @@ service vsftpd start
 systemctl enable vsftpd
 else
 ln -s /usr/share/phpmyadmin /var/www/$1/public_html/phpmyadmin
-PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
-echo $PHP_VERSION
 echo "server {
 listen 80;
 server_name $1 www.$1;
