@@ -84,6 +84,7 @@ echo "Установка завершена!"
 else
 PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
 echo $PHP_VERSION
+mkdir -p /var/www/$1/public_html/
 ln -s /usr/share/phpmyadmin /var/www/$1/public_html/phpmyadmin
 echo "server {
 listen 80;
@@ -128,7 +129,6 @@ mkdir /var/log/nginx/$1
 echo "1" > /var/log/nginx/$1/access.log
 nginx -t
 systemctl restart nginx
-mkdir -p /var/www/$1/public_html/
 echo "<?php phpinfo();?>" > /var/www/$1/public_html/index.php
 echo "Настройка завершена!"
 fi
