@@ -4,6 +4,27 @@ if [ $(id -u) != "0" ]; then
     echo "Error: You must be root to run this script, use sudo sh $0"
     exit 1
 fi
+if [ "$2" = "ssl" ]
+then
+certbot --nginx -d $1 -d www.$1
+chown -R www-data:www-data /var/www/$1/public_html
+nginx -t
+systemctl restart nginx
+echo "Добавлен ssl $1"
+elif ["$2" = "user"]
+read -p "Enter username SFTP: " username
+if [ -z "$username" ]
+then
+echo "Пользователь SFTP не добавлен!"
+else
+adduser $username
+passwd $username
+usermod -a -G www-data $username
+usermod -d /var/www/$1/public_html/ $username
+sudo chmod g+rwX -R /var/www
+echo "Пользователь добавлен!"
+fi
+fi
 if [ -z "$1" ]
 then
 echo "Установка Nginx, PHP, phpmyadmin, MariaDB, Memchached"
@@ -41,7 +62,7 @@ apt install php$PHP_VERSION-pcov # PCOV code coverage tool -y
 apt install php$PHP_VERSION-xdebug -y
 apt install php$PHP_VERSION-fpm -y
 apt-get install php$PHP_VERSION-memcache php$PHP_VERSION-memcached -y
-apt-get install memcached vsftpd -y
+apt-get install memcached -y
 apt install phpmyadmin -y
 ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 chmod 775 -R /usr/share/phpmyadmin/
@@ -56,39 +77,9 @@ mysql -u root -p
 ssl phpmyadmin
 mv /usr/share/phpmyadmin/ /usr/share/phpmyadmin1/
 cp -r phpmyadmin /usr/share/phpmyadmin/
+snap install --classic certbot
+ln -s /snap/bin/certbot /usr/bin/certbot
 echo "Установка завершена!"
-echo "Настройка FTP"
-service vsftpd stop
-chmod 777 /etc/vsftpd.conf
-cp /etc/vsftpd.conf /etc/vsftpd.conf.default
-rm /etc/vsftpd.conf
-echo "listen=YES
-listen_ipv6=NO
-anonymous_enable=NO
-local_enable=YES
-write_enable=YES
-local_umask=022
-use_localtime=YES
-xferlog_enable=YES
-connect_from_port_20=YES
-xferlog_file=/var/log/vsftpd.log
-xferlog_std_format=YES
-idle_session_timeout=600
-data_connection_timeout=120
-chroot_local_user=YES
-allow_writeable_chroot=YES
-ascii_upload_enable=YES
-ascii_download_enable=YES
-pasv_enable=Yes
-pasv_max_port=10100
-pasv_min_port=10090
-" > /etc/vsftpd.conf
-
-chmod 644 /etc/vsftpd.conf
-echo "" >> /etc/vsftpd.conf
-
-service vsftpd start
-systemctl enable vsftpd
 else
 PHP_VERSION=$(php -r "echo substr(phpversion(),0,3);")
 echo $PHP_VERSION
@@ -138,23 +129,5 @@ nginx -t
 systemctl restart nginx
 mkdir -p /var/www/$1/public_html/
 echo "<?php phpinfo();?>" > /var/www/$1/public_html/index.php
-snap install --classic certbot
-ln -s /snap/bin/certbot /usr/bin/certbot
-certbot --nginx -d $1 -d www.$1
-chown -R www-data:www-data /var/www/$1/public_html
-nginx -t
-systemctl restart nginx
-read -p "Enter username FTP: " username
-if [ -z "$username" ]
-then
-echo "Пользователь FTP не добавлен!"
-else
-adduser $username
-passwd $username
-usermod -a -G www-data $username
-usermod -d /var/www/$1/public_html/ $username
-sudo chmod g+rwX -R /var/www
-echo "Пользователь добавлен!"
-fi
 echo "Настройка завершена!"
 fi
