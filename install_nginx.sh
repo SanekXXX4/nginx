@@ -4,14 +4,15 @@ if [ $(id -u) != "0" ]; then
     echo "Error: You must be root to run this script, use sudo sh $0"
     exit 1
 fi
-if [ "$2" = "ssl" ]
+if [ "$2" = "ssl" ];
 then
 certbot --nginx -d $1 -d www.$1
 chown -R www-data:www-data /var/www/$1/public_html
 nginx -t
 systemctl restart nginx
 echo "Добавлен ssl $1"
-elif ["$2" = "user"]
+elif ["$2" = "user"];
+then
 read -p "Enter username SFTP: " username
 if [ -z "$username" ]
 then
