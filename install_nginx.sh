@@ -62,6 +62,8 @@ apt install php$PHP_VERSION-{curl,intl,mysql,readline,xml,mbstring} -y
 apt install php$PHP_VERSION-pcov # PCOV code coverage tool -y
 apt install php$PHP_VERSION-xdebug -y
 apt install php$PHP_VERSION-fpm -y
+apt install php$PHP_VERSION-xml -y
+apt install php$PHP_VERSION-mbstring -y
 apt-get install php$PHP_VERSION-memcache php$PHP_VERSION-memcached -y
 apt-get install memcached -y
 apt install phpmyadmin -y
