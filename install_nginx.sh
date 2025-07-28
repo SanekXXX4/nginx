@@ -11,7 +11,7 @@ chown -R www-data:www-data /var/www/$1/public_html
 nginx -t
 systemctl restart nginx
 echo "Добавлен ssl $1"
-elif ["$2" = "user"];
+elif [ "$2" = "user" ];
 then
 read -p "Enter username SFTP: " username
 if [ -z "$username" ]
