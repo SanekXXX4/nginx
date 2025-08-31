@@ -22,8 +22,13 @@ else
 adduser $username
 passwd $username
 usermod -a -G www-data $username
-usermod -d /var/www/$1/public_html/ $username
+usermod -d /var/www/$1/ $username
 sudo chmod g+rwX -R /var/www
+mkdir -p /var/www/$1/.ssh
+chmod 700 /var/www/$1/.ssh
+touch /var/www/$1/.ssh/authorized_keys
+chmod 600 /var/www/$1/.ssh/authorized_keys
+chown -R $username:$username /var/www/$1/
 echo "Пользователь добавлен!"
 exit 1
 fi
